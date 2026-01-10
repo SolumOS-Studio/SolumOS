@@ -6,3 +6,5 @@ isodir/
 build/
 count
 .clocignore
+*.log
+*.iso
