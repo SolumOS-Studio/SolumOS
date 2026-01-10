@@ -1,0 +1,8 @@
+.vscode/
+*.elf
+*.o
+Limine/
+isodir/
+build/
+count
+.clocignore
