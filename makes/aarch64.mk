@@ -30,6 +30,6 @@ CFLAGS := -g -c -O0 -I$(INCDIR1) -I$(INCDIR2) -nostdlib -nostartfiles -nodefault
 endif
 
 run_u: info $(ISO)
-	@qemu-system-aarch64 -machine virt -cpu cortex-a57 -m 1024 \
-	-bios /usr/share/qemu-efi-aarch64/QEMU_EFI.fd \
+	@qemu-system-aarch64 -machine virt -cpu cortex-a57 -m 1G \
+	-bios assets/AARCH_EFI.fd \
 	-cdrom $(ISO) -nographic

@@ -29,8 +29,13 @@ else ifeq ($(BUILD),debug)
 CFLAGS := -g -c -O0 -I$(INCDIR1) -I$(INCDIR2) -nostdlib -nostartfiles -nodefaultlibs -ffreestanding -z noexecstack
 endif
 
-run_b: info $(ISO)
-	@qemu-system-riscv64 -cdrom $(ISO) -no-shutdown -no-reboot -m 1G
-
 run_u: info $(ISO)
-	@qemu-system-riscv64 -cdrom $(ISO) -no-shutdown -no-reboot -m 1G
+	@cp assets/RISCV_VIRT_VARS.fd.back assets/RISCV_VIRT_VARS.fd
+	@qemu-system-riscv64 \
+  		-nographic \
+  		-machine virt,pflash0=pflash0,pflash1=pflash1 \
+  		-m 1G \
+  		-blockdev node-name=pflash0,driver=file,read-only=on,filename=assets/RISCV_VIRT_CODE.fd \
+  		-blockdev node-name=pflash1,driver=file,filename=assets/RISCV_VIRT_VARS.fd \
+  		-drive file=$(ISO),format=raw,id=cd,media=cdrom \
+  		-device virtio-blk-device,drive=cd \

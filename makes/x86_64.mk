@@ -30,7 +30,7 @@ CFLAGS := -g -c -O0 -I$(INCDIR1) -I$(INCDIR2) -nostdlib -nostartfiles -nodefault
 endif
 
 run_b: info $(ISO)
-	@qemu-system-x86_64 -cdrom $(ISO) -no-shutdown -no-reboot -m 1G
+	@qemu-system-x86_64 -m 1G -cdrom $(ISO) -no-shutdown -no-reboot
 
 run_u: info $(ISO)
-	@qemu-system-x86_64 -bios /usr/share/qemu/OVMF.fd -cdrom $(ISO) -no-shutdown -no-reboot -m 1G
+	@qemu-system-x86_64 -m 1G -bios assets/X86_64_EFI.fd -cdrom $(ISO) -no-shutdown -no-reboot

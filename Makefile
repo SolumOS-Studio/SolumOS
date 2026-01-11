@@ -61,13 +61,13 @@ info:
 
 $(ISO): $(KELF) arch/$(ARCH)/limine.conf
 	$(A)printf "\033[1;32m[ISO]\033[0m Packing ISO file...\n"
-	@cd isodir/Solum && if [ -e "slkrnl_AA64.elf" ] || [ -e "slkrnl_RC64.elf" ] || [ -e "slkrnl_x64.elf" ]; then rm *.elf; fi
-	@cp $(KELF) isodir/Solum
-	@cp arch/$(ARCH)/limine.conf isodir/limine
+	@cd build/isodir/Solum && if [ -e "slkrnl_AA64.elf" ] || [ -e "slkrnl_RC64.elf" ] || [ -e "slkrnl_x64.elf" ]; then rm *.elf; fi
+	@cp $(KELF) build/isodir/Solum
+	@cp arch/$(ARCH)/limine.conf build/isodir/limine
 	@xorriso -as mkisofs -R -r -J -b \
 	limine/limine-bios-cd.bin -no-emul-boot -boot-load-size 4 -boot-info-table \
 	-hfsplus -apm-block-size 2048 --efi-boot limine/limine-uefi-cd.bin \
-	-efi-boot-part --efi-boot-image --protective-msdos-label --volid "Solum OS" isodir -o $(ISO)
+	-efi-boot-part --efi-boot-image --protective-msdos-label --volid "Solum OS" build/isodir -o $(ISO)
 
 $(KELF): $(O_FILE)
 	$(A)$(LD) -n -T arch/$(ARCH)/linker.ld -o $(KELF) $(O_FILE) -z noexecstack
@@ -83,7 +83,7 @@ build/$(ARCH)/%.o: %.as
 clean:
 	@rm -f $(KELF) $(ISO)
 	@rm -rf build/$(ARCH)/*
-	@rm -f isodir/Solum/$(KELF)
+	@rm -f *.elf
 	@printf "\033[1;32m[Done]\033[0m Clean completed.\n"
 
 help:
@@ -99,17 +99,17 @@ help:
 prep:
 
 # create isodir
-	@if [ ! -d "isodir/EFI/BOOT" ]; then mkdir -p isodir/EFI/BOOT; fi
-	@if [ ! -d "isodir/limine" ]; then mkdir isodir/limine; fi
-	@if [ ! -d "isodir/Solum" ]; then mkdir isodir/Solum; fi
+	@if [ ! -d "build/isodir/EFI/BOOT" ]; then mkdir -p build/isodir/EFI/BOOT; fi
+	@if [ ! -d "build/isodir/limine" ]; then mkdir build/isodir/limine; fi
+	@if [ ! -d "build/isodir/Solum" ]; then mkdir build/isodir/Solum; fi
 
 # create bootloader
-	@if [ ! -d "Limine" ]; then printf "\n" && printf "I'm Working hard. Don't press your Ctrl and C. They are dirty and smells awful !!" && \
+	@if [ ! -d "assets/Limine" ]; then cd assets && printf "\n" && printf "I'm Working hard. Don't press your Ctrl and C. They are dirty and smells awful !!" && \
 	git clone https://codeberg.org/Limine/Limine.git --branch=v10.5.0-binary --depth=1 && rm Limine/.gitignore && rm -r Limine/.git \
 	&& rm Limine/limine-bios-hdd.h && rm Limine/limine.c && rm Limine/Makefile; fi
-	@if [ ! -e "isodir/EFI/BOOT/BOOTAA64.EFI" ] || [ ! -e "isodir/EFI/BOOT/BOOTLOONGARCH64.EFI" ] || [ ! -e "isodir/EFI/BOOT/BOOTRISCV64.EFI" ] || [ ! -e "isodir/EFI/BOOT/BOOTX64.EFI" ]; then \
-		cd Limine && cp -n BOOTX64.EFI BOOTAA64.EFI BOOTLOONGARCH64.EFI BOOTRISCV64.EFI ../isodir/EFI/BOOT; fi
-	@if [ ! -e "isodir/limine/limine-uefi-cd.bin" ] || [ ! -e "isodir/limine/limine-bios-cd.bin" ] || [ ! -e "isodir/limine/limine-bios.sys" ]; then \
+	@if [ ! -e "build/isodir/EFI/BOOT/BOOTAA64.EFI" ] || [ ! -e "build/isodir/EFI/BOOT/BOOTLOONGARCH64.EFI" ] || [ ! -e "build/isodir/EFI/BOOT/BOOTRISCV64.EFI" ] || [ ! -e "build/isodir/EFI/BOOT/BOOTX64.EFI" ]; then \
+		cd build/Limine && cp -n BOOTX64.EFI BOOTAA64.EFI BOOTLOONGARCH64.EFI BOOTRISCV64.EFI ../../build/isodir/EFI/BOOT; fi
+	@if [ ! -e "build/isodir/limine/limine-uefi-cd.bin" ] || [ ! -e "build/isodir/limine/limine-bios-cd.bin" ] || [ ! -e "build/isodir/limine/limine-bios.sys" ]; then \
 		cd Limine && cp -n limine-uefi-cd.bin limine-bios.sys limine-bios-cd.bin ../isodir/limine; fi
 
 # create build directory 
